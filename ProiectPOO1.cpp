@@ -29,7 +29,7 @@ public:
 			this->memPartitie[i] = 200;
 		}
 		this->hdd = 0;
-		this->memPartitie[20] = memPartitie[20];
+		this->memPartitie[this->nrPartitii] = memPartitie[this->nrPartitii];
 		this->marcaPlVideo = "";
 		this->vRam = 0;
 		this->memRam = 0;
@@ -79,7 +79,6 @@ public:
 			this->memPartitie[i] = desktop.memPartitie[i];
 		}
 		this->hdd = desktop.hdd;
-		this->memPartitie[20] = desktop.memPartitie[20];
 		this->marcaPlVideo = desktop.marcaPlVideo;
 		this->vRam = desktop.vRam;
 		this->memRam = desktop.memRam;
@@ -93,7 +92,7 @@ public:
 	Desktop& operator=(const Desktop& desktop) {
 		this->marca = new char[strlen(desktop.marca) + 1];
 		this->hdd = desktop.hdd;
-		this->memPartitie[20] = desktop.memPartitie[20];
+		this->memPartitie[this->nrPartitii] = desktop.memPartitie[this->nrPartitii];
 		this->marcaPlVideo = desktop.marcaPlVideo;
 		this->vRam = desktop.vRam;
 		this->memRam = desktop.memRam;
@@ -104,10 +103,11 @@ public:
 
 	//Supraincarare <<
 
+	
 	friend ostream& operator<<(ostream& out, Desktop& desktop) {
 		out << "Marca: " << desktop.marca << endl;
 		out << "Harddisk: " << desktop.hdd << endl;
-		for (int i = 0; i < this->nrPartitii; i++)
+		for (int i = 0; i < desktop.nrPartitii; i++)
 			out << "Partitie " << i << ": " << desktop.memPartitie[i] << endl;
 		out << "Placa video: " << desktop.marcaPlVideo << endl;
 		out << "Memorie Video: " << desktop.memRam << endl;
@@ -119,26 +119,34 @@ public:
 	}
 
 	//Supraincarcare >>
-	friend istream& operator<<(istream& in, Desktop& desktop) {
+	
+	friend istream& operator>>(istream& in, Desktop& desktop) {
+		if (desktop.marca != NULL) {
+			delete[] desktop.marca;
+		}
+		desktop.marca = new char[1024];
 		cout << "Marca: " << endl;
 		in >> desktop.marca;
 		cout << "HardDisk: " << endl;
 		in >> desktop.hdd;
-		for (int i = 0; i < this->nrPartitii; i++) {
+		cout << "Numar partiti: " << endl;
+		in >> desktop.nrPartitii;
+		for (int i = 0; i < desktop.nrPartitii; i++) {
 			cout << "Partitie " << i << " :" << endl;
 			in >> desktop.memPartitie[i];
 		}
 		cout << "Placa video: ";
-		in >> desktop.marcaPlVideo << endl;
+		in >> desktop.marcaPlVideo;
 		cout << "Memorie Video: " << endl;
-		in << desktop.memRam;
-		cout >> "Numar partiti: " << endl;
-		in >> desktop.nrPartitii;
+		in >> desktop.memRam;
 		cout << "Pret: " << endl;
 		cin >> desktop.pret;
-	}
 
+		return in;
+	}
+	
 	//Supraincarcare == 
+	
 	bool operator ==(Desktop desktop) {
 		if (this->marca == desktop.marca && this->pret == desktop.pret) {
 			return true;
@@ -146,6 +154,7 @@ public:
 		else
 			return false;
 	}
+	
 
 
 
@@ -250,7 +259,7 @@ public:
 	}
 
 	void setPlacaVideo(string marcaPlVideo) {
-		if (marcaPlVideo == "Nvidia");
+		if (marcaPlVideo == "Nvidia")
 		this->marcaPlVideo = marcaPlVideo;
 		if (marcaPlVideo == "Radeon")
 			this->marcaPlVideo = marcaPlVideo;
@@ -286,7 +295,7 @@ public:
 		return this->memRam;
 	}
 
-	void setPret(int pret) {
+	void setPret(float pret) {
 		this->pret = pret;
 		if (this->memRam > 8 && this->memRam <= 16)
 			this->pret += pret / 2;
@@ -299,7 +308,7 @@ public:
 		this->pret = this->pret + valTva;
 	}
 
-	int getPret() {
+	float getPret() {
 		return this->pret;
 	}
 
@@ -335,11 +344,10 @@ class Componente {
 int main() {
 
 	Desktop d1;
+	//cin >> d1;
 	//d1.afisare();
 	//Apel constructor cu un param
 	Desktop d2("Asus");
-	Desktop d3 = d2;
-	//d2.afisare();
 	float memPartitie[50];
 	//Apel constructor cu toti param
 	Desktop d4("Lenovo", memPartitie, "Nvidia", 16, 3, 4, 2400);
@@ -350,7 +358,7 @@ int main() {
 	float pret;
 	string marcaPlVideo;
 	float hdd;
-
+	
 	cout << "Creere obiect..." << endl;
 	cout << "Marca: " << endl;
 	cin >> marca;
@@ -402,6 +410,8 @@ int main() {
 	d1.afisare();
 	Desktop d5(marca, memPartitie, marcaPlVideo, vRam, memRam, nrPartitii, pret);
 
+	Desktop d3 = d5;
+	d3.afisare();
 	//d4.afisare();
 
 }
