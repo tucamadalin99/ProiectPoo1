@@ -103,7 +103,7 @@ public:
 
 	//Supraincarare <<
 
-	
+
 	friend ostream& operator<<(ostream& out, Desktop& desktop) {
 		out << "Marca: " << desktop.marca << endl;
 		out << "Harddisk: " << desktop.hdd << endl;
@@ -119,7 +119,7 @@ public:
 	}
 
 	//Supraincarcare >>
-	
+
 	friend istream& operator>>(istream& in, Desktop& desktop) {
 		if (desktop.marca != NULL) {
 			delete[] desktop.marca;
@@ -155,9 +155,9 @@ public:
 			return this->memPartitie[index];
 		}
 	}
-	
+
 	//Supraincarcare == 
-	
+
 	bool operator ==(Desktop desktop) {
 		if (this->marca == desktop.marca && this->pret == desktop.pret) {
 			return true;
@@ -165,7 +165,7 @@ public:
 		else
 			return false;
 	}
-	
+
 
 
 
@@ -243,7 +243,7 @@ public:
 			cout << "Aloca din nou memorie: " << endl;
 
 			int i = 0;
-			do{
+			do {
 				if (i < this->nrPartitii && auxHdd >= 0) {
 					printf("Partitie %d: ", i + 1);
 					cin >> memPartitie[i];
@@ -271,7 +271,7 @@ public:
 
 	void setPlacaVideo(string marcaPlVideo) {
 		if (marcaPlVideo == "Nvidia")
-		this->marcaPlVideo = marcaPlVideo;
+			this->marcaPlVideo = marcaPlVideo;
 		if (marcaPlVideo == "Radeon")
 			this->marcaPlVideo = marcaPlVideo;
 		else
@@ -383,7 +383,7 @@ int main() {
 	float pret;
 	string marcaPlVideo;
 	float hdd;
-	
+	v
 	cout << "Creere obiect..." << endl;
 	cout << "Marca: " << endl;
 	cin >> marca;
@@ -400,7 +400,7 @@ int main() {
 		cout << "Partitia " << i + 1 << ": " << endl;
 		cin >> memPartitie[i];
 	}
-	cout << "Se aloca memorie" << endl; 
+	cout << "Se aloca memorie" << endl;
 	cout << "Va rugam asteptati";
 	for (int i = 0; i < 4; i++) {
 		Sleep(1000);
