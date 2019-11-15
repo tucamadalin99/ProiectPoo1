@@ -111,8 +111,8 @@ public:
 			out << "Partitie " << i << ": " << desktop.memPartitie[i] << endl;
 		out << "Placa video: " << desktop.marcaPlVideo << endl;
 		out << "Memorie Video: " << desktop.memRam << endl;
-		out << "Memorie RAM: " << desktop.memRam;
-		out << "Numar partitii: " << desktop.nrPartitii;
+		out << "Memorie RAM: " << desktop.memRam << endl;
+		out << "Numar partitii: " << desktop.nrPartitii << endl;
 		out << "Pret: " << desktop.pret << endl;
 		return out;
 
@@ -135,7 +135,7 @@ public:
 			cout << "Partitie " << i << " :" << endl;
 			in >> desktop.memPartitie[i];
 		}
-		cout << "Placa video: ";
+		cout << "Placa video: " << endl;
 		in >> desktop.marcaPlVideo;
 		cout << "Memorie Video: " << endl;
 		in >> desktop.memRam;
@@ -143,6 +143,17 @@ public:
 		cin >> desktop.pret;
 
 		return in;
+	}
+
+	//Supraincarcare operator[] indexare
+	float& operator[](int index) {
+		if (index < 0 || index > this->nrPartitii) {
+			cout << "Indexul se afla in afara limitelor!" << endl;
+			throw new exception("Exception caught");
+		}
+		else {
+			return this->memPartitie[index];
+		}
 	}
 	
 	//Supraincarcare == 
@@ -344,7 +355,21 @@ class Componente {
 int main() {
 
 	Desktop d1;
-	//cin >> d1;
+	cin >> d1;
+	cout << d1;
+
+	//Apel supraincarcare[]
+	cout << endl << endl;
+	cout << "Partitia de pe prima pozitie este: " << d1[0];
+	try {
+		cout << d1[10] << endl;
+	}
+	catch (exception* e) {
+		cout << "First exception caught" << endl;
+	}
+	catch (...) {
+		cout << "Second exception caght" << endl;
+	}
 	//d1.afisare();
 	//Apel constructor cu un param
 	Desktop d2("Asus");
@@ -409,7 +434,8 @@ int main() {
 	cout << "<---------------------->" << endl << endl;
 	d1.afisare();
 	Desktop d5(marca, memPartitie, marcaPlVideo, vRam, memRam, nrPartitii, pret);
-
+	//Apel operator supraincarcat =
+	d1 = d5;
 	Desktop d3 = d5;
 	d3.afisare();
 	//d4.afisare();
