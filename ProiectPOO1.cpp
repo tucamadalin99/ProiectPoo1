@@ -1,14 +1,17 @@
 #include <iostream>
 #include <string>
 #include <stdio.h>
+#include <Windows.h>
+
 
 using namespace std;
 
 class Desktop {
 private:
-	const int TVA;
+	const float TVA;
 	static int nrComputere;
 	char* marca;
+	float hdd;
 	float memPartitie[20];
 	string marcaPlVideo;
 	int vRam;
@@ -25,6 +28,8 @@ public:
 		for (int i = 0; i < 5; i++) {
 			this->memPartitie[i] = 200;
 		}
+		this->hdd = 0;
+		this->memPartitie[20] = memPartitie[20];
 		this->marcaPlVideo = "";
 		this->vRam = 0;
 		this->memRam = 0;
@@ -67,13 +72,14 @@ public:
 	}
 
 	//Constructor copiere
-	//Primeste ca parametru un obiect pe care il vei pune in main si ii va copia valorile intr-un obiect nou instantiat
 	Desktop(const Desktop& desktop) :TVA(24) {
 		this->marca = new char[strlen(desktop.marca) + 1];
 		strcpy(this->marca, desktop.marca);
 		for (int i = 0; i < 5; i++) {
 			this->memPartitie[i] = desktop.memPartitie[i];
 		}
+		this->hdd = desktop.hdd;
+		this->memPartitie[20] = desktop.memPartitie[20];
 		this->marcaPlVideo = desktop.marcaPlVideo;
 		this->vRam = desktop.vRam;
 		this->memRam = desktop.memRam;
@@ -83,20 +89,88 @@ public:
 		//cout << "Test constructor copiere" << endl;
 	}
 
+	//Supraincarcare =
+	Desktop& operator=(const Desktop& desktop) {
+		this->marca = new char[strlen(desktop.marca) + 1];
+		this->hdd = desktop.hdd;
+		this->memPartitie[20] = desktop.memPartitie[20];
+		this->marcaPlVideo = desktop.marcaPlVideo;
+		this->vRam = desktop.vRam;
+		this->memRam = desktop.memRam;
+		this->nrPartitii = desktop.nrPartitii;
+		this->pret = desktop.pret;
+		return *this;
+	}
+
+	//Supraincarare <<
+
+	friend ostream& operator<<(ostream& out, Desktop& desktop) {
+		out << "Marca: " << desktop.marca << endl;
+		out << "Harddisk: " << desktop.hdd << endl;
+		for (int i = 0; i < this->nrPartitii; i++)
+			out << "Partitie " << i << ": " << desktop.memPartitie[i] << endl;
+		out << "Placa video: " << desktop.marcaPlVideo << endl;
+		out << "Memorie Video: " << desktop.memRam << endl;
+		out << "Memorie RAM: " << desktop.memRam;
+		out << "Numar partitii: " << desktop.nrPartitii;
+		out << "Pret: " << desktop.pret << endl;
+		return out;
+
+	}
+
+	//Supraincarcare >>
+	friend istream& operator<<(istream& in, Desktop& desktop) {
+		cout << "Marca: " << endl;
+		in >> desktop.marca;
+		cout << "HardDisk: " << endl;
+		in >> desktop.hdd;
+		for (int i = 0; i < this->nrPartitii; i++) {
+			cout << "Partitie " << i << " :" << endl;
+			in >> desktop.memPartitie[i];
+		}
+		cout << "Placa video: ";
+		in >> desktop.marcaPlVideo << endl;
+		cout << "Memorie Video: " << endl;
+		in << desktop.memRam;
+		cout >> "Numar partiti: " << endl;
+		in >> desktop.nrPartitii;
+		cout << "Pret: " << endl;
+		cin >> desktop.pret;
+	}
+
+	//Supraincarcare == 
+	bool operator ==(Desktop desktop) {
+		if (this->marca == desktop.marca && this->pret == desktop.pret) {
+			return true;
+		}
+		else
+			return false;
+	}
+
+
+
 	//Functie de afisare
 	void afisare() {
 		printf("Marca este: %s\n", this->marca);
 		cout << "Hard diskul are: " << this->nrPartitii << " partitii" << endl;
 		for (int i = 0; i < nrPartitii; i++)
-			cout << "Partitia " << i+1 << " contine: " << this->memPartitie[i] << "GB" << endl;
-		cout <<"Marca placii video este: " << this->marcaPlVideo << endl;
-		cout <<"Placa video are memoria de: " << this->vRam << " GB" << endl;
-		cout <<"Desktopul are memoria RAM de: " << this->memRam <<" GB" << endl;
-		cout <<"Pretul este de: " << this->pret << " lei" << endl;
-		cout <<"Numarul de desktopuri instantiate = " << this->nrComputere << endl;
+			cout << "Partitia " << i + 1 << " contine: " << this->memPartitie[i] << "GB" << endl;
+		cout << "Marca placii video este: " << this->marcaPlVideo << endl;
+		cout << "Placa video are memoria de: " << this->vRam << " GB" << endl;
+		cout << "Desktopul are memoria RAM de: " << this->memRam << " GB" << endl;
+		cout << "Pretul este de: " << this->pret << " lei" << endl;
+		cout << "Numarul de desktopuri instantiate = " << this->nrComputere << endl;
 		cout << "TVA-ul asupra pretului este: " << this->TVA << " %" << endl;
 	}
 
+
+	//Functie verificare valoare numerica
+	bool isNumeric(const char* s) {
+		for (int i = 0; i < strlen(s); i++)
+			if (isdigit(s[i]) == false)
+				return false;
+		return true;
+	}
 
 	//Sectiune getteri setteri
 
@@ -105,22 +179,137 @@ public:
 	}
 
 	void setMarca(const char* marca) {
-		if (marca == "")
-			cout << "Nu ati introdus marca " << endl;
-		else {
-			this->marca = new char[strlen(marca) + 1];
-			strcpy(this->marca, marca);
+		while (isNumeric(marca)) {
+			cout << "Nu puteti folosi valori numerice pentru marca!" << endl;
+			cout << "Introduceti din nou marca: " << endl;
+			scanf("%s", marca);
+		}
+		this->marca = new char[strlen(marca) + 1];
+		strcpy(this->marca, marca);
+
+	}
+
+	void setHdd(float hdd) {
+		while (hdd < 150) {
+			cout << "Nu exista harddisk cu mai putin de 150 GB! " << endl << "Introdu din nou capacitate: ";
+			cin >> hdd;
+		}
+		this->hdd = hdd;
+	}
+
+	float getHdd() {
+		return this->hdd;
+	}
+
+	void setNrPartitii(int nrPartitii) {
+		while (nrPartitii >= 10 || nrPartitii < 1) {
+			cout << "Numarul de partitii poate fi intre 1-10" << endl << "Numar partitii: " << endl;
+			cin >> nrPartitii;
+		}
+		this->nrPartitii = nrPartitii;
+	}
+	//Cel mai nenecesar flex aiurea
+	void setMemPartitie(float memPartitie[]) {
+		float auxHdd;
+		auxHdd = this->hdd;
+		bool ok = false;
+		for (int i = 0; i < this->nrPartitii; i++) {
+			this->hdd = this->hdd - memPartitie[i];
+			this->memPartitie[i] = memPartitie[i];
+		}
+		if (this->hdd < 0) {
+			this->hdd = auxHdd;
+			cout << "Ati epuizat memoria harddiskului!" << endl;
+			cout << "Aloca din nou memorie: " << endl;
+
+			int i = 0;
+			do{
+				if (i < this->nrPartitii && auxHdd >= 0) {
+					printf("Partitie %d: ", i + 1);
+					cin >> memPartitie[i];
+					auxHdd = auxHdd - memPartitie[i];
+					this->memPartitie[i] = memPartitie[i];
+					i++;
+					ok = true;
+				}
+				if (i == this->nrPartitii && auxHdd < 0) {
+					cout << "Memorie HDD epuizata, introduceti din nou: " << endl;
+					i = 0;
+					auxHdd = this->hdd;
+					ok = true;
+				}
+				if (i == this->nrPartitii && auxHdd >= 0) {
+					ok = false;
+				}
+			} while (ok);
 		}
 	}
-	//Destructoru pulii mele. Asta pui in el ceva decat daca ai variabila de tip pointer cum e in cazu meu char* marca
-	//Daca n-ai niciun pointer il declari nu scri nmc in el si il lasi asa.
+
+	float* getMemPartitie() {
+		return this->memPartitie;
+	}
+
+	void setPlacaVideo(string marcaPlVideo) {
+		if (marcaPlVideo == "Nvidia");
+		this->marcaPlVideo = marcaPlVideo;
+		if (marcaPlVideo == "Radeon")
+			this->marcaPlVideo = marcaPlVideo;
+		else
+			cout << "Nu exista alt tip de placa video!" << endl;
+	}
+
+	string getPlacaVideo() {
+		return this->marcaPlVideo;
+	}
+
+	void setVRam(int vRam) {
+		while (vRam < 1) {
+			cout << "Memorie prea mica, try again: " << endl;
+			cin >> vRam;
+		}
+		this->vRam = vRam;
+	}
+
+	int getVRam() {
+		return this->vRam;
+	}
+
+	void setRam(int memRam) {
+		while (vRam < 1) {
+			cout << "Memorie RAM prea mica, try again: " << endl;
+			cin >> memRam;
+		}
+		this->memRam = memRam;
+	}
+
+	int getRam() {
+		return this->memRam;
+	}
+
+	void setPret(int pret) {
+		this->pret = pret;
+		if (this->memRam > 8 && this->memRam <= 16)
+			this->pret += pret / 2;
+		if (this->hdd > 500)
+			this->pret += pret / 3;
+		if (this->vRam > 2)
+			this->pret += pret / 2;
+		//Aplicare TVA
+		float valTva = (this->TVA / 100) * pret;
+		this->pret = this->pret + valTva;
+	}
+
+	int getPret() {
+		return this->pret;
+	}
+
 	~Desktop() {
 		if (this->marca != NULL)
 			delete[]this->marca;
 		//cout << "Test destructor" << endl;
 	}
 };
-//Initializare variabila statica, in afara clasei trebuie.
+//Initializare variabila statica
 int Desktop::nrComputere = 0;
 
 class Laptop {
@@ -144,52 +333,75 @@ class Componente {
 };
 
 int main() {
-	//Instantiere obiect cu constructor default(Nu il apelezi ca pe o functie p-asta doar declari obiectu si se apeleaza el singur)
+
 	Desktop d1;
 	//d1.afisare();
 	//Apel constructor cu un param
 	Desktop d2("Asus");
-	//Apel constructor de copiere. Din cate vezi, ii dai lu d3 toate atributele lui d2. Practic copiezi obiectu d2 in d3
 	Desktop d3 = d2;
 	//d2.afisare();
-	float memPartitie[] = { 300, 200, 240, 140 };
+	float memPartitie[50];
 	//Apel constructor cu toti param
-	Desktop d4("Lenovo" , memPartitie, "Nvidia", 16, 3, 4, 2400);
+	Desktop d4("Lenovo", memPartitie, "Nvidia", 16, 3, 4, 2400);
 	//Apel functie de afisare a obiectului
-
-	//De aici poti sa ignori ca doar m-am flexat aiurea.
-	d4.afisare();
+	//d4.afisare();
 	char* marca = new char[10];
 	int memRam, vRam, nrPartitii;
 	float pret;
 	string marcaPlVideo;
+	float hdd;
+
 	cout << "Creere obiect..." << endl;
 	cout << "Marca: " << endl;
 	cin >> marca;
+	d1.setMarca(marca);
+	cout << "----->Configurare Desktop: " << endl;
+	cout << "Capacitate Harddisk GB: ";
+	cin >> hdd;
+	d1.setHdd(hdd);
 	cout << "Numar partitii harddisk: " << endl;
 	cin >> nrPartitii;
+	d1.setNrPartitii(nrPartitii);
 	cout << "Alocare memorie hard: " << endl;
 	for (int i = 0; i < nrPartitii; i++) {
 		cout << "Partitia " << i + 1 << ": " << endl;
 		cin >> memPartitie[i];
 	}
+	cout << "Se aloca memorie" << endl; 
+	cout << "Va rugam asteptati";
+	for (int i = 0; i < 4; i++) {
+		Sleep(1000);
+		cout << ". ";
+	}
+	d1.setMemPartitie(memPartitie);
+	cout << endl << "Memorie HDD alocata!" << endl;
+	//d1.afisare();
 	cout << "Marca placa video: " << endl;
 	cin >> marcaPlVideo;
+	d1.setPlacaVideo(marcaPlVideo);
 	cout << "Memorie video: " << endl;
 	cin >> vRam;
+	d1.setVRam(vRam);
 	cout << "Memorie RAM: " << endl;
 	cin >> memRam;
+	d1.setRam(memRam);
 	cout << "Pret: " << endl;
 	cin >> pret;
+	d1.setPret(pret);
+	cout << "Calculare pret final + TVA..." << endl;
+	Sleep(3000);
+	cout << d1.getPret() << " LEI" << endl;
+	cout << "--------Procesare";
+	for (int i = 0; i < 4; i++) {
+		Sleep(1000);
+		cout << ". ";
+	}
+	cout << endl << "<---------------------->" << endl;
+	cout << " Obiectul a fost creat! " << endl;
+	cout << "<---------------------->" << endl << endl;
+	d1.afisare();
 	Desktop d5(marca, memPartitie, marcaPlVideo, vRam, memRam, nrPartitii, pret);
-	cout << "----------------------" << endl;
-	cout << "Obiectul a fost creat!" << endl;
-	cout << "----------------------" << endl;
-	d5.afisare();
 
-
-
-	 
 	//d4.afisare();
 
 }
