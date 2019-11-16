@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <Windows.h>
 
-
 using namespace std;
 
 class Desktop {
@@ -75,14 +74,14 @@ public:
 	Desktop(const Desktop& desktop) :TVA(24) {
 		this->marca = new char[strlen(desktop.marca) + 1];
 		strcpy(this->marca, desktop.marca);
-		for (int i = 0; i < 5; i++) {
+		this->nrPartitii = desktop.nrPartitii;
+		for (int i = 0; i < desktop.nrPartitii; i++) {
 			this->memPartitie[i] = desktop.memPartitie[i];
 		}
 		this->hdd = desktop.hdd;
 		this->marcaPlVideo = desktop.marcaPlVideo;
 		this->vRam = desktop.vRam;
 		this->memRam = desktop.memRam;
-		this->nrPartitii = desktop.nrPartitii;
 		this->pret = desktop.pret;
 		this->nrComputere++;
 		//cout << "Test constructor copiere" << endl;
@@ -91,12 +90,15 @@ public:
 	//Supraincarcare =
 	Desktop& operator=(const Desktop& desktop) {
 		this->marca = new char[strlen(desktop.marca) + 1];
+		strcpy(this->marca, desktop.marca);
 		this->hdd = desktop.hdd;
-		this->memPartitie[this->nrPartitii] = desktop.memPartitie[this->nrPartitii];
+		this->nrPartitii = desktop.nrPartitii;
+		for (int i = 0; i < desktop.nrPartitii; i++) {
+			this->memPartitie[i] = desktop.memPartitie[i];
+		}
 		this->marcaPlVideo = desktop.marcaPlVideo;
 		this->vRam = desktop.vRam;
 		this->memRam = desktop.memRam;
-		this->nrPartitii = desktop.nrPartitii;
 		this->pret = desktop.pret;
 		return *this;
 	}
@@ -148,7 +150,7 @@ public:
 	//Supraincarcare operator[] indexare
 	float& operator[](int index) {
 		if (index < 0 || index > this->nrPartitii) {
-			cout << "Indexul se afla in afara limitelor!" << endl;
+			cout << "Usor coae ca ai intrecut limita!" << endl;
 			throw new exception("Exception caught");
 		}
 		else {
@@ -166,8 +168,47 @@ public:
 			return false;
 	}
 
+	Desktop operator+(int nr) {
+		Desktop copie = *this;
+		copie.memRam += nr;
+		return copie;
+	}
 
+	Desktop operator-(int nr) {
+		Desktop copie = *this;
+		copie.memRam -= nr;
+		return copie;
+	}
 
+	Desktop operator++() {
+		float memPartitiiNou[20];
+		for (int i = 0; i < this->nrPartitii; i++) {
+			memPartitiiNou[i] = this->memPartitie[i];
+		}
+		memPartitiiNou[this->nrPartitii] = 30;
+		this->nrPartitii++;
+
+		this->memPartitie[20] = memPartitie[20];
+
+		return *this;
+	}
+	//Postfixat
+	Desktop& operator++(int) {
+		Desktop copie = *this;
+		float memPartitiiNoi[20];
+		for (int i = 0; i < this->nrPartitii; i++) {
+			memPartitiiNoi[i] = this->memPartitie[i];
+		}
+
+		this->memPartitie[20] = memPartitie[20];
+		this->nrPartitii++;
+		return copie;
+	}
+	// Explicit 
+	explicit operator float() {
+		return this->pret;
+	}
+	// Implicit
 
 	//Functie de afisare
 	void afisare() {
@@ -261,7 +302,7 @@ public:
 				if (i == this->nrPartitii && auxHdd >= 0) {
 					ok = false;
 				}
-			} while (ok);
+			} while (ok); 
 		}
 	}
 
@@ -333,16 +374,72 @@ public:
 int Desktop::nrComputere = 0;
 
 class Laptop {
+private:
 	const int TVA;
 	static int nrLaptopuri;
 	char* marca;
-	float memPartitie[20];
-	float dimensiune;
+	float dimensiuni[3];
 	float greutate;
 	float pret;
 	string tipPlacaVideo;
+
+public:
+	Laptop() :TVA(24) {
+		this->marca = NULL;
+		for (int i = 0; i < 3; i++) {
+			this->dimensiuni[i] = 0;
+		}
+		this->greutate = 0;
+		this->pret = 0;
+		this->tipPlacaVideo = "Default";
+		this->nrLaptopuri++;
+		cout << "Constructor default apelat" << endl;
+	}
+
+	Laptop(const char* marca) :TVA(24) {
+		this->marca = new char[strlen(marca) + 1];
+		strcpy(this->marca, marca);
+		for (int i = 0; i < 3; i++) {
+			this->dimensiuni[i] = 0;
+		}
+		this->greutate = 0;
+		this->pret = 0;
+		this->tipPlacaVideo = "Default";
+		this->nrLaptopuri++;
+		cout << "Constructor cu un param apelat" << endl;
+	}
+
+	Laptop(const char* marca, float dimensiuni[], float greutate, float pret, string tipPlacaVideo):TVA(24) {
+		this->marca = new char[strlen(marca) + 1];
+		strcpy(this->marca, marca);
+		for (int i = 0; i < 3; i++) {
+			this->dimensiuni[i] = dimensiuni[i];
+		}
+		this->greutate = greutate;
+		this->pret = pret;
+		this->tipPlacaVideo = tipPlacaVideo;
+		this->nrLaptopuri++;
+		cout << "Constructor cu toti param apelat" << endl;
+	}
+
+	//Constructor copiere
+	Laptop(const Laptop& l) :TVA(24) {
+		this->marca = new char[strlen(l.marca) + 1];
+		strcpy(this->marca, l.marca);
+		for (int i = 0; i < 3; i++) {
+			this->dimensiuni[i] = l.dimensiuni[i];
+		}
+		this->greutate = l.greutate;
+		this->pret = l.pret;
+		this->tipPlacaVideo = l.tipPlacaVideo;
+		this->nrLaptopuri++;
+		cout << "S-a supt informatia prin constructoru de copiere" << endl;
+	}
+
+
 };
 
+int Laptop::nrLaptopuri = 0;
 class Componente {
 	const int generatie;
 	static int contor;
@@ -354,6 +451,12 @@ class Componente {
 
 int main() {
 
+	Laptop l1;
+	Laptop l2("Lenovo");
+	float dimensiuni[] = { 50, 40, 20 };
+	Laptop l3("Asus", dimensiuni, 2, 4000, "Dedicata");
+	Laptop l4 = l3;
+	/*
 	Desktop d1;
 	cin >> d1;
 	cout << d1;
@@ -368,7 +471,7 @@ int main() {
 		cout << "First exception caught" << endl;
 	}
 	catch (...) {
-		cout << "Second exception caght" << endl;
+		cout << "Second exception caught" << endl;
 	}
 	//d1.afisare();
 	//Apel constructor cu un param
@@ -383,8 +486,8 @@ int main() {
 	float pret;
 	string marcaPlVideo;
 	float hdd;
-	v
-	cout << "Creere obiect..." << endl;
+	
+		cout << "Creere obiect..." << endl;
 	cout << "Marca: " << endl;
 	cin >> marca;
 	d1.setMarca(marca);
@@ -420,13 +523,13 @@ int main() {
 	d1.setRam(memRam);
 	cout << "Pret: " << endl;
 	cin >> pret;
-	d1.setPret(pret);
+	d1.setPret(pret);		
 	cout << "Calculare pret final + TVA..." << endl;
 	Sleep(3000);
 	cout << d1.getPret() << " LEI" << endl;
 	cout << "--------Procesare";
 	for (int i = 0; i < 4; i++) {
-		Sleep(1000);
+		Sleep(1000); 
 		cout << ". ";
 	}
 	cout << endl << "<---------------------->" << endl;
@@ -436,8 +539,20 @@ int main() {
 	Desktop d5(marca, memPartitie, marcaPlVideo, vRam, memRam, nrPartitii, pret);
 	//Apel operator supraincarcat =
 	d1 = d5;
+	cout << endl << endl;
+	d1.afisare();
 	Desktop d3 = d5;
 	d3.afisare();
+	//Apel operator +
+	d3 = d3 + 5;
+	cout << d3.getRam() << endl;
+	//Apel operator -
+	d3 = d3 - 3;
+	cout << d3.getRam() << endl;
 	//d4.afisare();
-
+	++d3;
+	cout << *d3.getMemPartitie() << endl;
+	d3++;
+	cout << *d3.getMemPartitie() << endl;
+	*/
 }
