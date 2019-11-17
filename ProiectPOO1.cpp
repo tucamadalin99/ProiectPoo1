@@ -151,7 +151,7 @@ public:
 	//Supraincarcare operator[] indexare
 	float& operator[](int index) {
 		if (index < 0 || index > this->nrPartitii) {
-			cout << "Usor coae ca ai intrecut limita!" << endl;
+			cout << "Ai intrecut limita!" << endl;
 			throw new exception("Exception caught");
 		}
 		else {
@@ -394,7 +394,7 @@ class Laptop {
 private:
 	const int TVA;
 	static int nrLaptopuri;
-	char* marca;
+	char* marcaL;
 	int nrDim;
 	float dimensiuni[10];
 	float greutate;
@@ -402,8 +402,15 @@ private:
 	string tipPlacaVideo;
 
 public:
+	bool isNumeric(const char* s) {
+		for (int i = 0; i < strlen(s); i++)
+			if (isdigit(s[i]) == false)
+				return false;
+		return true;
+	}
+
 	Laptop() :TVA(24) {
-		this->marca = NULL;
+		this->marcaL = NULL;
 		this->nrDim = 0;
 		for (int i = 0; i < this->nrDim; i++) {
 			this->dimensiuni[i] = 0;
@@ -415,9 +422,9 @@ public:
 		cout << "Constructor default apelat" << endl;
 	}
 
-	Laptop(const char* marca) :TVA(24) {
-		this->marca = new char[strlen(marca) + 1];
-		strcpy(this->marca, marca);
+	Laptop(const char* marcaL) :TVA(24) {
+		this->marcaL = new char[strlen(marcaL) + 1];
+		strcpy(this->marcaL, marcaL);
 		this->nrDim = 0;
 		for (int i = 0; i < 3; i++) {
 			this->dimensiuni[i] = 0;
@@ -429,9 +436,9 @@ public:
 		cout << "Constructor cu un param apelat" << endl;
 	}
 
-	Laptop(const char* marca,int nrDim, float dimensiuni[], float greutate, float pret, string tipPlacaVideo) :TVA(24) {
-		this->marca = new char[strlen(marca) + 1];
-		strcpy(this->marca, marca);
+	Laptop(const char* marcaL,int nrDim, float dimensiuni[], float greutate, float pret, string tipPlacaVideo) :TVA(24) {
+		this->marcaL = new char[strlen(marcaL) + 1];
+		strcpy(this->marcaL, marcaL);
 		this->nrDim = nrDim;
 		for (int i = 0; i < this->nrDim; i++) {
 			this->dimensiuni[i] = dimensiuni[i];
@@ -460,8 +467,8 @@ public:
 
 	//Supraincarcare operator = 
 	Laptop& operator=(const Laptop& l) {
-		this->marca = new char[strlen(l.marca) + 1];
-		strcpy(this->marca, l.marca);
+		this->marcaL = new char[strlen(l.marcaL) + 1];
+		strcpy(this->marcaL, l.marcaL);
 		this->nrDim = l.nrDim;
 		for (int i = 0; i < this->nrDim; i++)
 			this->dimensiuni[i] = l.dimensiuni[i];
@@ -473,7 +480,7 @@ public:
 	}
 
 	friend ostream& operator <<(ostream& out, Laptop& l) {
-		out << "Marca laptopului este: " << l.marca << endl;
+		out << "Marca laptopului este: " << l.marcaL << endl;
 		cout << "Nr. de dimensiuni este: " << l.nrDim << endl;
 		out << "Dimensiuni: ";
 		for (int i = 0; i < l.nrDim; i++) {
@@ -492,10 +499,8 @@ public:
 
 	friend istream& operator>>(istream& in, Laptop& l) {
 		cout << "Introduceti marca laptop: " << endl;
-		if (l.marca != NULL)
-			delete[] l.marca;
-		l.marca = new char[1024];
-		in >> l.marca;
+		l.marcaL = new char[1024];
+		in >> l.marcaL;
 		cout << "Introdu dimensiuni: " << endl;
 		for (int i = 0; i < 3; i++) {
 			in >> l.dimensiuni[i];
@@ -519,7 +524,7 @@ public:
 	}
 
 	bool operator==(Laptop l) {
-		if (this->marca == l.marca && this->pret == l.pret)
+		if (this->marcaL == l.marcaL && this->pret == l.pret)
 			return true;
 		else
 			return false;
@@ -543,13 +548,103 @@ public:
 		for (int i = 0; i < this->nrDim; i++) {
 			dimNoi[i] = this->dimensiuni[i];
 		}
-
 		this->dimensiuni[10] = dimNoi[10];
 		this->nrDim++;
 		cout << this->nrDim;
 		return copie;
 	}
-	
+
+	Laptop operator++() {
+		float dimNoi[10];
+		for (int i = 0; i < this->nrDim; i++) {
+			dimNoi[i] = this->dimensiuni[i];
+		}
+		dimNoi[this->nrDim] = 30;
+		this->nrDim++;
+
+		this->dimensiuni[20] = dimensiuni[20];
+
+		return *this;
+	}
+
+	// Explicit 
+	explicit operator float() {
+		return this->pret;
+	}
+
+	//Operator !
+	bool operator!() {
+		if (this->marcaL != NULL)
+			return false;
+		else
+			return true;
+	}
+
+	//Operator >=
+
+	bool operator<=(Laptop l) {
+		if (this->pret == l.pret)
+			return true;
+		else
+			return false;
+	}
+
+	char* getMarca() {
+		return this->marcaL;
+	}
+
+	void setMarca(const char* marcaL) {
+		if (isNumeric(marcaL))
+			cout << "Marca nu poate contine cifre!!" << endl;
+		else
+			this->marcaL = new char[strlen(marcaL) + 1];
+		strcpy(this->marcaL, marcaL);
+	}
+
+	int getNrDim() {
+		return this->nrDim;
+	}
+
+	void serNrDim(int nr) {
+		if (nr > 4) {
+			cout << "Nu poti avea mai mult de 4 dimensiuni " << endl;
+		}
+		this->nrDim = nr;
+	}
+
+	float* getDim() {
+		return this->dimensiuni;
+	}
+
+	void setDim(float dim[]) {
+		for (int i = 0; i < this->nrDim; i++) {
+			if (dim[i] > 60) {
+				cout << "Dimensiuneanu poate fi mai mare de 60 de cm" << endl;
+			}
+			else
+				this->dimensiuni[i] = dim[i];
+		}
+	}
+
+	string getTipVideo() {
+		return this->tipPlacaVideo;
+	}
+
+	void setTipVideo(string pl) {
+			this->tipPlacaVideo = pl;
+	}
+
+	float getPret() {
+		return this->pret;
+	}
+
+	void setPret(float pret) {
+		if (pret < 1000)
+			cout << "Nu exista laptopuri cu pretul mai mic decat 1000 de lei!" << endl;
+		else
+			this->pret = pret;
+	}
+
 };
 
 int Laptop::nrLaptopuri = 0;
@@ -563,7 +658,7 @@ class Componente {
 };
 
 int main() {
-	
+
 	Laptop l1;
 	Laptop l2("Lenovo");
 	float dimensiuni[] = { 50, 40, 20 };
@@ -589,18 +684,22 @@ int main() {
 		cout << "Nu sunt egale!" << endl;
 	}
 
-	l1++;
+	l3++;
+	++l3;
+	//cout << l3;
+	if (l2 <= l3)
+		cout << "L2 mai mic sau egal ca l3" << endl;
+	else
+		cout << "L2 mai mare decat l3" << endl;
 
+	if (!l2) {
+		cout << "L2 negat" << endl;
+	}
+	else
+		cout << "L2 nu este negat" << endl;
+
+	cout << "------------A 2-a clasa--------------" << endl << endl;
 	
-	float memPartitie[] = { 200, 300, 100 };
-	Desktop d4("Lenovo", 600, memPartitie, "Nvidia", 8, 16, 3, 2500 );
-	cout << d4;
-	d4++;
-	cout << d4;
-	++d4;
-	cout << d4;
-	
-	/*
 	Desktop d1;
 	cin >> d1;
 	cout << d1;
@@ -622,7 +721,7 @@ int main() {
 	Desktop d2("Asus");
 	float memPartitie[50];
 	//Apel constructor cu toti param
-	Desktop d4("Lenovo", memPartitie, "Nvidia", 16, 3, 4, 2400);
+	Desktop d4("Lenovo", 500, memPartitie, "Nvidia", 16, 3, 4, 2400);
 	//Apel functie de afisare a obiectului
 	//d4.afisare();
 	char* marca = new char[10];
@@ -680,7 +779,7 @@ int main() {
 	cout << " Obiectul a fost creat! " << endl;
 	cout << "<---------------------->" << endl << endl;
 	d1.afisare();
-	Desktop d5(marca, memPartitie, marcaPlVideo, vRam, memRam, nrPartitii, pret);
+	Desktop d5(marca, hdd, memPartitie, marcaPlVideo, vRam, memRam, nrPartitii, pret);
 	//Apel operator supraincarcat =
 	d1 = d5;
 	cout << endl << endl;
@@ -698,5 +797,5 @@ int main() {
 	cout << *d3.getMemPartitie() << endl;
 	d3++;
 	cout << *d3.getMemPartitie() << endl;
-	*/
+	
 }
