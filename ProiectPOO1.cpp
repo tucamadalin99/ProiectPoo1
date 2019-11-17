@@ -55,9 +55,10 @@ public:
 	}
 
 	//Constructor cu parametrii
-	Desktop(const char* marca, float memPartitie[20], string marcaPlVideo, int vRam, int memRam, int nrPartitii, float pret) :TVA(24) {
+	Desktop(const char* marca, int hdd, float memPartitie[20], string marcaPlVideo, int vRam, int memRam, int nrPartitii, float pret) :TVA(24) {
 		this->marca = new char[strlen(marca) + 1];
 		strcpy(this->marca, marca);
+		this->hdd = hdd;
 		for (int i = 0; i < nrPartitii; i++) {
 			this->memPartitie[i] = memPartitie[i];
 		}
@@ -142,7 +143,7 @@ public:
 		cout << "Memorie Video: " << endl;
 		in >> desktop.memRam;
 		cout << "Pret: " << endl;
-		cin >> desktop.pret;
+		in >> desktop.pret;
 
 		return in;
 	}
@@ -208,7 +209,23 @@ public:
 	explicit operator float() {
 		return this->pret;
 	}
-	// Implicit
+	
+	//Operator !
+	bool operator!() {
+		if (this->marca != NULL)
+			return false;
+		else
+			return true;
+	}
+
+	//Operator >=
+
+	bool operator<=(Desktop d) {
+		if (this->pret == d.pret)
+			return true;
+		else
+			return false;
+	}
 
 	//Functie de afisare
 	void afisare() {
@@ -302,7 +319,7 @@ public:
 				if (i == this->nrPartitii && auxHdd >= 0) {
 					ok = false;
 				}
-			} while (ok); 
+			} while (ok);
 		}
 	}
 
@@ -378,7 +395,8 @@ private:
 	const int TVA;
 	static int nrLaptopuri;
 	char* marca;
-	float dimensiuni[3];
+	int nrDim;
+	float dimensiuni[10];
 	float greutate;
 	float pret;
 	string tipPlacaVideo;
@@ -386,7 +404,8 @@ private:
 public:
 	Laptop() :TVA(24) {
 		this->marca = NULL;
-		for (int i = 0; i < 3; i++) {
+		this->nrDim = 0;
+		for (int i = 0; i < this->nrDim; i++) {
 			this->dimensiuni[i] = 0;
 		}
 		this->greutate = 0;
@@ -399,6 +418,7 @@ public:
 	Laptop(const char* marca) :TVA(24) {
 		this->marca = new char[strlen(marca) + 1];
 		strcpy(this->marca, marca);
+		this->nrDim = 0;
 		for (int i = 0; i < 3; i++) {
 			this->dimensiuni[i] = 0;
 		}
@@ -409,10 +429,11 @@ public:
 		cout << "Constructor cu un param apelat" << endl;
 	}
 
-	Laptop(const char* marca, float dimensiuni[], float greutate, float pret, string tipPlacaVideo):TVA(24) {
+	Laptop(const char* marca,int nrDim, float dimensiuni[], float greutate, float pret, string tipPlacaVideo) :TVA(24) {
 		this->marca = new char[strlen(marca) + 1];
 		strcpy(this->marca, marca);
-		for (int i = 0; i < 3; i++) {
+		this->nrDim = nrDim;
+		for (int i = 0; i < this->nrDim; i++) {
 			this->dimensiuni[i] = dimensiuni[i];
 		}
 		this->greutate = greutate;
@@ -424,9 +445,10 @@ public:
 
 	//Constructor copiere
 	Laptop(const Laptop& l) :TVA(24) {
-		this->marca = new char[strlen(l.marca) + 1];
-		strcpy(this->marca, l.marca);
-		for (int i = 0; i < 3; i++) {
+		//this->marca = new char[strlen(l.marca) + 1];
+		//strcpy(this->marca, l.marca);
+		this->nrDim = l.nrDim;
+		for (int i = 0; i < this->nrDim; i++) {
 			this->dimensiuni[i] = l.dimensiuni[i];
 		}
 		this->greutate = l.greutate;
@@ -436,7 +458,98 @@ public:
 		cout << "S-a supt informatia prin constructoru de copiere" << endl;
 	}
 
+	//Supraincarcare operator = 
+	Laptop& operator=(const Laptop& l) {
+		this->marca = new char[strlen(l.marca) + 1];
+		strcpy(this->marca, l.marca);
+		this->nrDim = l.nrDim;
+		for (int i = 0; i < this->nrDim; i++)
+			this->dimensiuni[i] = l.dimensiuni[i];
+		this->greutate = l.greutate;
+		this->pret = l.pret;
+		this->tipPlacaVideo = l.tipPlacaVideo;
+		cout << "Atribuit cu operator egal!" << endl;
+		return *this;
+	}
 
+	friend ostream& operator <<(ostream& out, Laptop& l) {
+		out << "Marca laptopului este: " << l.marca << endl;
+		cout << "Nr. de dimensiuni este: " << l.nrDim << endl;
+		out << "Dimensiuni: ";
+		for (int i = 0; i < l.nrDim; i++) {
+			if (i == 2) {
+				out << l.dimensiuni[i];
+				break;
+			}
+			out << l.dimensiuni[i] << " X ";
+		}
+		out << endl;
+		out << "Greutate: " << l.greutate << endl;
+		out << "Pret: " << l.pret << endl;
+		out << "Tip placa video: " << l.tipPlacaVideo << endl;
+		return out;
+	}
+
+	friend istream& operator>>(istream& in, Laptop& l) {
+		cout << "Introduceti marca laptop: " << endl;
+		if (l.marca != NULL)
+			delete[] l.marca;
+		l.marca = new char[1024];
+		in >> l.marca;
+		cout << "Introdu dimensiuni: " << endl;
+		for (int i = 0; i < 3; i++) {
+			in >> l.dimensiuni[i];
+		}
+		cout << "Introduceti greutate(in kg): " << endl;
+		in >> l.greutate;
+		cout << "Introduceti pret: " << endl;
+		in >> l.pret;
+		cout << "Introduceti tip placa video(integrata/dedicata): " << endl;
+		in >> l.tipPlacaVideo;
+		return in;
+	}
+
+	float& operator[](int index) {
+		if (index < 0 || index > 3) {
+			cout << "Index in afara limitelor!" << endl;
+			throw new exception("Exceptie!");
+		}
+		else
+			return this->dimensiuni[index];
+	}
+
+	bool operator==(Laptop l) {
+		if (this->marca == l.marca && this->pret == l.pret)
+			return true;
+		else
+			return false;
+	}
+
+	Laptop operator+(int nr) {
+		Laptop copie = *this;
+		copie.greutate += nr;
+		return copie;
+	}
+
+	Laptop operator-(int nr) {
+		Laptop copie = *this;
+		copie.greutate -= nr;
+		return copie;
+	}
+
+	Laptop& operator++(int) {
+		Laptop copie = *this;
+		float dimNoi[10];
+		for (int i = 0; i < this->nrDim; i++) {
+			dimNoi[i] = this->dimensiuni[i];
+		}
+
+		this->dimensiuni[10] = dimNoi[10];
+		this->nrDim++;
+		cout << this->nrDim;
+		return copie;
+	}
+	
 };
 
 int Laptop::nrLaptopuri = 0;
@@ -450,12 +563,43 @@ class Componente {
 };
 
 int main() {
-
+	
 	Laptop l1;
 	Laptop l2("Lenovo");
 	float dimensiuni[] = { 50, 40, 20 };
-	Laptop l3("Asus", dimensiuni, 2, 4000, "Dedicata");
+	Laptop l3("Asus", 3, dimensiuni, 2, 4000, "Dedicata");
 	Laptop l4 = l3;
+	l2 = l3;
+	cin >> l3;
+	cout << l3;
+	cout << "Prima pozitie: " << l3[0] << endl;
+	try {
+		cout << "Test indexare: " << l3[2] << endl;
+	}
+	catch (exception* e) {
+		cout << "Prima exceptie prinsa" << endl;
+	}
+	catch (...) {
+		cout << "A doua exceptie prinsa" << endl;
+	}
+	if (l1 == l2) {
+		cout << "Au aceleasi atribute" << endl;
+	}
+	else {
+		cout << "Nu sunt egale!" << endl;
+	}
+
+	l1++;
+
+	
+	float memPartitie[] = { 200, 300, 100 };
+	Desktop d4("Lenovo", 600, memPartitie, "Nvidia", 8, 16, 3, 2500 );
+	cout << d4;
+	d4++;
+	cout << d4;
+	++d4;
+	cout << d4;
+	
 	/*
 	Desktop d1;
 	cin >> d1;
@@ -486,7 +630,7 @@ int main() {
 	float pret;
 	string marcaPlVideo;
 	float hdd;
-	
+
 		cout << "Creere obiect..." << endl;
 	cout << "Marca: " << endl;
 	cin >> marca;
@@ -523,13 +667,13 @@ int main() {
 	d1.setRam(memRam);
 	cout << "Pret: " << endl;
 	cin >> pret;
-	d1.setPret(pret);		
+	d1.setPret(pret);
 	cout << "Calculare pret final + TVA..." << endl;
 	Sleep(3000);
 	cout << d1.getPret() << " LEI" << endl;
 	cout << "--------Procesare";
 	for (int i = 0; i < 4; i++) {
-		Sleep(1000); 
+		Sleep(1000);
 		cout << ". ";
 	}
 	cout << endl << "<---------------------->" << endl;
